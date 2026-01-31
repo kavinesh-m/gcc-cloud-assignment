@@ -11,11 +11,9 @@ pipeline {
     stages {
         stage('Pre-flight Validation') {
             steps {
-                // Pre-flight validation
-                sh 'terraform -version'
-                dir('terraform/environment/dev') {
-                    sh 'terraform validate'
-                }
+                // COMMAND 1: Grant permission to the validation script
+                sh 'chmod +x ./scripts/validate.sh'
+                sh './scripts/validate.sh'
             }
         }
         stage('Provision Infrastructure') {
@@ -28,14 +26,14 @@ pipeline {
         }
         stage('Post-deploy Verification') {
             steps {
-                // Post-deploy verification
-                sh 'curl -f https://dev-alb-52149831.ap-southeast-1.elb.amazonaws.com || exit 1'
+                // COMMAND 2: Grant permission to the verification script
+                sh 'chmod +x ./scripts/verify.sh'
+                sh './scripts/verify.sh'
             }
         }
     }
     post {
         failure {
-            // Automated rollback / Self-healing
             echo 'Verification Failed! Initiating Self-Healing Rollback...'
             dir('terraform/environment/dev') {
                 sh 'terraform destroy -auto-approve'                
