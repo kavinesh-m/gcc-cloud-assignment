@@ -15,26 +15,25 @@ pipeline {
 
         stage('Build and Push to ECR') {
             steps {
-                script {
-                    env.IMAGE_TAG = "v${env.BUILD_NUMBER}"
-                    env.REPO_URL = "725770766740.dkr.ecr.ap-southeast-1.amazonaws.com/dev-app-repo"
-                    
-                    withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', 
-                                                    usernameVariable: 'AWS_ACCESS_KEY_ID', 
-                                                    passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                        sh """
-                        # Login to ECR
-                        aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 725770766740.dkr.ecr.ap-southeast-1.amazonaws.com
+                dir('app') { 
+                    script {
+                        env.IMAGE_TAG = "v${env.BUILD_NUMBER}"
+                        env.REPO_URL = "725770766740.dkr.ecr.ap-southeast-1.amazonaws.com/dev-app-repo"
                         
-                        # Build and tag
-                        docker build -t dev-app-repo .
-                        docker tag dev-app-repo:latest ${env.REPO_URL}:latest
-                        docker tag dev-app-repo:latest ${env.REPO_URL}:${env.IMAGE_TAG}
-                        
-                        # Push
-                        docker push ${env.REPO_URL}:latest
-                        docker push ${env.REPO_URL}:${env.IMAGE_TAG}
-                        """
+                        withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', 
+                                                        usernameVariable: 'AWS_ACCESS_KEY_ID', 
+                                                        passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                            sh """
+                            aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 725770766740.dkr.ecr.ap-southeast-1.amazonaws.com
+                            
+                            docker build -t dev-app-repo .
+                            
+                            docker tag dev-app-repo:latest ${env.REPO_URL}:latest
+                            docker tag dev-app-repo:latest ${env.REPO_URL}:${env.IMAGE_TAG}
+                            docker push ${env.REPO_URL}:latest
+                            docker push ${env.REPO_URL}:${env.IMAGE_TAG}
+                            """
+                        }
                     }
                 }
             }
