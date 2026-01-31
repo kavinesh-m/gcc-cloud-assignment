@@ -34,9 +34,9 @@ pipeline {
             echo 'Verification Failed! Initiating Self-Healing Rollback...'
             withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                 dir('terraform/environment/dev') {
+                    sh 'terraform init'
                     sh 'terraform destroy -auto-approve'                
                 }
             }
         }
     }
-}
