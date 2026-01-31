@@ -17,3 +17,7 @@ output "web_server_public_ip" {
   description = "Web server public IP"
   value       = module.compute.instance_public_ip
 }
+
+output "alb_dns_name" {
+  value = module.alb.alb_dns_name 
+}

@@ -1,23 +1,26 @@
 #!/bin/bash
-ALB_URL="http://dev-alb-52149831.ap-southeast-1.elb.amazonaws.com"
-MAX_RETRIES=5
-RETRY_COUNT=0
+ALB_URL=$1
+
+if [ -z "$ALB_URL" ]; then
+    echo "ERROR: No ALB URL provided. Orchestration failed."
+    exit 1
+fi
 
 echo "Starting Post-deployment Verification for: $ALB_URL"
 
-while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-    echo "Attempting health check ($((RETRY_COUNT+1))/$MAX_RETRIES)..."
-    # -L: Follow redirects (from http to https)
-    # -k: Insecure (ignore SSL certificate warnings)
-    # -f: Fail silently on server errors
-    if curl -s -k -L -f "$ALB_URL" > /dev/null; then
-        echo "SUCCESS: Application is live and healthy!"
-        exit 0
-    fi
-    echo "Application not ready yet. Waiting 60 seconds before next attempt..."
-    sleep 60
-    RETRY_COUNT=$((RETRY_COUNT+1))
-done
+# Logic Breakdown:
+# -L: Follow the HTTP (80) -> HTTPS (443) redirect
+# -k: Ignore the "Insecure" SSL certificate warning 
+# --retry 6: Give ECS Fargate ~3 minutes to stabilize
+# --retry-delay 30: Wait 30 seconds between pings
 
-echo "ERROR: Application health check failed after $MAX_RETRIES attempts."
-exit 1
+if curl -s -L -k -f --retry 6 --retry-delay 30 "$ALB_URL" > /dev/null; then
+    echo "----------------------------------------------------"
+    echo "SUCCESS: Application is live and accessible!"
+    echo "URL: $ALB_URL"
+    echo "----------------------------------------------------"
+    exit 0
+else
+    echo "ERROR: Application health check failed after multiple attempts."
+    exit 1
+fi
