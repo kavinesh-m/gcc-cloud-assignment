@@ -1,4 +1,8 @@
 #!/bin/bash
+echo "Waiting for Load Balancer to stabilize (60 seconds)..."
+
+sleep 60
+
 echo "Starting Post-deployment Verification..."
 
 # The URL of your Application Load Balancer from Assignment 1

@@ -1,18 +1,18 @@
 resource "aws_ecr_repository" "app_repo" {
   name                 = "${var.environment}-app-repo"
-  image_tag_mutability = "IMMUTABLE" # Prevents image overwriting (Security Best Practice)
+  image_tag_mutability = "IMMUTABLE"
+  force_delete         = true
 
   encryption_configuration {
     encryption_type = "KMS"
-    kms_key         = var.kms_key_arn # Uses your GCC main key
+    kms_key         = var.kms_key_arn 
   }
 
   image_scanning_configuration {
-    scan_on_push = true # Mandatory for GCC to find vulnerabilities
+    scan_on_push = true 
   }
 }
 
-# Lifecycle policy to keep the repo clean and reduce costs
 resource "aws_ecr_lifecycle_policy" "repo_policy" {
   repository = aws_ecr_repository.app_repo.name
 
