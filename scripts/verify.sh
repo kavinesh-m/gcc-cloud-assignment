@@ -7,7 +7,10 @@ echo "Starting Post-deployment Verification for: $ALB_URL"
 
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
     echo "Attempting health check ($((RETRY_COUNT+1))/$MAX_RETRIES)..."
-    if curl -s -f "$ALB_URL" > /dev/null; then
+    # -L: Follow redirects (from http to https)
+    # -k: Insecure (ignore SSL certificate warnings)
+    # -f: Fail silently on server errors
+    if curl -s -k -L -f "$ALB_URL" > /dev/null; then
         echo "SUCCESS: Application is live and healthy!"
         exit 0
     fi
