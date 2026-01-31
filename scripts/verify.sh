@@ -3,15 +3,13 @@ echo "Waiting for Load Balancer to stabilize (60 seconds)..."
 
 sleep 60
 
-echo "Starting Post-deployment Verification..."
+ALB_URL="http://dev-alb-52149831.ap-southeast-1.elb.amazonaws.com"
 
-# The URL of your Application Load Balancer from Assignment 1
-ALB_URL="https://dev-alb-52149831.ap-southeast-1.elb.amazonaws.com"
+echo "Starting Post-deployment Verification..."
 
 echo "Testing connection to: $ALB_URL"
 
-# -f fails on 4xx/5xx errors, -s is silent, -o sends output to /dev/null
-if curl -s -f -o /dev/null "$ALB_URL"; then
+if curl -s -f "$ALB_URL" > /dev/null; then
     echo "SUCCESS: Application is live and healthy!"
     exit 0
 else
