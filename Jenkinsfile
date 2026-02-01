@@ -43,7 +43,6 @@ pipeline {
                     dir('terraform/environment/dev') {
                         sh "terraform apply -auto-approve -var='container_image_tag=${env.IMAGE_TAG}'"
                         script {
-                            // CLEANING LOGIC: Extract ONLY the URL part using regex
                             def rawOutput = sh(script: 'terraform output -no-color -raw alb_dns_name', returnStdout: true).trim()
                             def matcher = (rawOutput =~ /([a-zA-Z0-9.-]+\.amazonaws\.com)/)
                             if (matcher) {
@@ -69,7 +68,9 @@ pipeline {
                 def prevBuild = (env.BUILD_NUMBER.toInteger() - 1)
                 if (prevBuild > 0) {
                     def rollbackTag = "v${prevBuild}"
-                    withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', 
+                                    passwordVariable: 'AWS_SECRET_ACCESS_KEY', 
+                                    usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                         dir('terraform/environment/dev') {
                             sh "terraform apply -auto-approve -var='container_image_tag=${rollbackTag}'"
                         }

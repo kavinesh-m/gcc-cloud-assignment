@@ -9,7 +9,7 @@ fi
 
 echo "Starting Post-deployment Verification for: $ALB_URL"
 
-MAX_RETRIES=6
+MAX_RETRIES=3
 COUNT=0
 
 while [ $COUNT -lt $MAX_RETRIES ]; do
