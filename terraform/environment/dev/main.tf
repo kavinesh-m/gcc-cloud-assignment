@@ -61,4 +61,5 @@ module "ecs" {
   private_subnet_ids = module.vpc.private_subnets 
   security_group_ids = [module.alb.alb_security_group_id]
   target_group_arn   = module.alb.alb_target_group_arn
-  container_image = "725770766740.dkr.ecr.ap-southeast-1.amazonaws.com/dev-app-repo:${var.container_image_tag}"}
+  container_image = "725770766740.dkr.ecr.ap-southeast-1.amazonaws.com/dev-app-repo:${var.container_image_tag}"
+}
