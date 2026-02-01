@@ -9,5 +9,8 @@ variable "vpc_name" {
   default = "gcc-vpc-dev"
 }
 
-
+variable "container_image_tag" {
+  type        = string
+  default     = "latest"
+}
 
