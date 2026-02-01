@@ -33,12 +33,41 @@ This project follows the **SHIP-HAT** standards:
 *Evidence of the pipeline blocking a change that didn't have a GCC ticket ID.*
 
 ### 3. Post-deploy (Failure Test)
-![Jira Fail](assets/post-deploy-failed.png)
+![Post-deploy Fail](assets/post-deploy-failed.png)
 *Evidence of the pipeline post deployment fail due to error in app service detected.*
 
 ### 4. Automated Rollback (Self-Healing)
 ![Rollback Evidence](assets/rollback-complete.png)
 *Evidence from Assignment 2 where a bad version was detected and reverted.*
+
+### 5. Evidence & Audit Artefacts
+
+<details> <summary><b>Click to view: Live Endpoint Proof</b></summary>
+
+This is the verification that the application is live and accessible via the ALB.
+
+## Live Endpoint
+**URL:** [https://dev-alb-1945154568.ap-southeast-1.elb.amazonaws.com/]
+![Application Screenshot](assets/web-app.png)
+(Full endpoint proof available in /artefacts/live_endpoint_proof.txt)
+
+</details>
+
+<details> <summary><b>Click to view: Terraform Plan Evidence</b></summary>
+
+This shows the dry-run of the infrastructure changes before they were applied.
+
+![Terraform Plan Evidence](artefacts/terraform_plan_evidence.txt)
+
+</details>
+
+<details> <summary><b>Click to view: Terraform State List</b></summary>
+
+This confirms that all resources (VPC, IAM, KMS, ALB) are successfully tracked in the S3 backend.
+
+![Terraform State List](artefacts/terraform_state_list.txt)
+
+</details>
 
 ## How to run it
 1. Push your code to the repository.

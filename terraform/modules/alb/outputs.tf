@@ -12,3 +12,7 @@ output "alb_security_group_id" {
   description = "SG ID of the ALB for ECS ingress rules"
   value       = aws_security_group.alb_sg.id
 }
+
+output "alb_url" {
+  value = "https://${aws_lb.main.dns_name}"
+}
