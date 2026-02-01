@@ -51,11 +51,13 @@ pipeline {
                         sh 'terraform init'
                         sh "terraform apply -auto-approve -var='container_image_tag=${env.IMAGE_TAG}'"
                         script {
-                            def rawUrl = sh(script: 'terraform output -raw alb_dns_name', returnStdout: true).trim()
+                            def rawUrl = sh(script: 'terraform output -no-color -raw alb_dns_name', returnStdout: true).trim()
                             
-                            env.ALB_URL = rawUrl.replaceAll(/[^a-zA-Z0-9.-]/, "")
+                            def cleanUrl = (rawUrl =~ /^[a-zA-Z0-9.-]+/)[0]
                             
-                            echo "--- FINAL CLEANED URL: ${env.ALB_URL} ---"
+                            env.ALB_URL = cleanUrl
+                            
+                            echo "--- VALIDATED CLEAN URL: ${env.ALB_URL} ---"
                         }
                     }
                 }
