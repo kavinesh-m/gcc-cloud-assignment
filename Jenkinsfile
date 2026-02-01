@@ -4,6 +4,7 @@ pipeline {
     environment {
         REPO_URL = "725770766740.dkr.ecr.ap-southeast-1.amazonaws.com/dev-app-repo"
         IMAGE_TAG = "v${env.BUILD_NUMBER}"
+        DEPLOYMENT_STARTED = 'false'
     }
     stages {
         stage('Jira Governance Check') {
@@ -15,7 +16,7 @@ pipeline {
                     if (commitMsg =~ /GCC-[0-9]+/) {
                         echo "Compliance Verified: Jira Ticket found."
                     } else {
-                        error "COMPLIANCE FAILURE: Commit message must contain a Jira ticket (e.g., 'GCC-123: Test Compliance)."
+                        error "COMPLIANCE FAILURE: Commit message must contain a Jira ticket (e.g., 'GCC-123: Test Compliance')."
                     }
                 }
             }
@@ -53,6 +54,9 @@ pipeline {
         }
         stage('Provision Full Stack') {
             steps {
+                script {
+                    env.DEPLOYMENT_STARTED = 'true'
+                }
                 withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     dir('terraform/environment/dev') {
                         sh "terraform apply -auto-approve -var='container_image_tag=${env.IMAGE_TAG}'"
@@ -78,27 +82,33 @@ pipeline {
     post {
         failure {
             script {
-                sh "ls -la" 
-                
-                echo "Verification Failed! Triggering Self-Healing Rollback..."
-                def prevBuild = (env.BUILD_NUMBER.toInteger() - 1)
-                
-                if (prevBuild > 0) {
-                    def rollbackTag = "v${prevBuild}"
-                    def tfPath = "terraform/environment/dev"
+                if (env.DEPLOYMENT_STARTED == 'true') {
+                    echo "--- DEPLOYMENT FAILURE DETECTED ---"
+                    echo "Triggering Self-Healing Rollback to ensure environment stability."
                     
-                    withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', 
-                                    passwordVariable: 'AWS_SECRET_ACCESS_KEY', 
-                                    usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    def prevBuild = (env.BUILD_NUMBER.toInteger() - 1)
+                    
+                    if (prevBuild > 0) {
+                        def rollbackTag = "v${prevBuild}"
+                        def tfPath = "terraform/environment/dev"
                         
-                        if (fileExists(tfPath)) {
+                        echo "Targeting Rollback Image Tag: ${rollbackTag}"
+                        
+                        withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', 
+                                         passwordVariable: 'AWS_SECRET_ACCESS_KEY', 
+                                         usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                            
                             sh "terraform -chdir=${tfPath} init"
                             sh "terraform -chdir=${tfPath} apply -auto-approve -var='container_image_tag=${rollbackTag}'"
-                            echo "SUCCESS: Rollback to ${rollbackTag} complete."
-                        } else {
-                            error "CRITICAL: Terraform directory not found at ${tfPath}. Workspace may have been cleaned."
                         }
+                        echo "SUCCESS: Self-healing complete. Environment reverted to ${rollbackTag}."
+                    } else {
+                        echo "WARNING: No previous build found. Manual intervention may be required."
                     }
+                } else {
+                    echo "--- GOVERNANCE/PRE-FLIGHT FAILURE ---"
+                    echo "The build failed before deployment started. No infrastructure changes were made."
+                    echo "Skipping automated rollback to save time and AWS resources."
                 }
             }
         }
