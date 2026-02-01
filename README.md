@@ -3,10 +3,10 @@
 This project is my submission of technical assignment for Cloud Devops Engineer role and it comprise of Assignments 1, 2, and 3. It shows a fully automated, secure AWS environment managed by Terraform,Jenkins, Docker containerization, with built-in "Self-Healing" and Jira governance adhering to GCC/GCC+, SHIP-HAT compliance frameworks.
 
 ## What this project does
-1.  **Sets up AWS:** Creates a secure VPC, private subnets, and IAM roles using Terraform.
-2.  **Enforces Rules:** A Jenkins pipeline checks every change for a Jira ticket before it starts.
+1.  **Sets up AWS Infrastructure:** Creates a secure Infrastrcuture-as-code using Terraform. VPC, Internet Gateway private subnets(for application), public subnets(for the ALB) and dedicated IAM roles and policy, Encrypted S3 and ECR using AWS KMS keys.
+2.  **Enforces Rules:** A Jenkins pipeline which checks every change for a Jira ticket before it starts along with pre-flight validation and post-deployment verification.
 3.  **Deploys Safely:** Builds a Docker app, pushes it to ECR, and deploys to EC2/ALB.
-4.  **Self-Heals:** If the app fails a health check, the pipeline automatically rolls back to the last working version.
+4.  **Auto-Rollback:** If the app fails a health check, the pipeline automatically rolls back to the last working version.
 
 ## Project Structure
 * `/terraform`: All Infrastructure-as-Code files (VPC, IAM, S3, KMS).
@@ -76,5 +76,5 @@ This confirms that all resources (VPC, IAM, KMS, ALB) are successfully tracked i
 
 ---
 **Author:** Kavinesh Manimaran    
-**Project:** AWS@Terraform - GCC/SHIP-HAT Compliance Assignment
+**Project:** AWS @ Terraform and Jenkins - GCC/SHIP-HAT Compliance Assignment
 © 2026 All Rights Reserved.

@@ -19,6 +19,5 @@ variable "kms_key_arn" {
 }
 
 variable "s3_bucket_arn" {
-  description = "ARN - S3 bucket for logs"
   type        = string
 }

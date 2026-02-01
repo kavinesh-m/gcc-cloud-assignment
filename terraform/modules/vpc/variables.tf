@@ -8,7 +8,6 @@ variable "kms_key_arn" {
   type        = string
 }
 variable "environment" {
-  description = "dev environment"
   type        = string
   default     = "dev"
 }

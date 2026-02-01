@@ -1,5 +1,4 @@
 variable "environment" {
-  description = "dev environment"
   type        = string
 }
 
