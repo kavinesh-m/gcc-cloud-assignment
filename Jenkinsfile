@@ -53,7 +53,9 @@ pipeline {
                         script {
                             def rawUrl = sh(script: 'terraform output -raw alb_dns_name', returnStdout: true).trim()
                             
-                            env.ALB_URL = rawUrl.replaceAll(/[╷"<>]/, "") 
+                            env.ALB_URL = rawUrl.replaceAll(/[^a-zA-Z0-9.-]/, "")
+                            
+                            echo "--- FINAL CLEANED URL: ${env.ALB_URL} ---"
                         }
                     }
                 }
