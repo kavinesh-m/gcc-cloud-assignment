@@ -75,6 +75,7 @@ pipeline {
                         
                         dir('terraform/environment/dev') {
                             echo "Rolling back ECS to image tag: ${rollbackTag}"
+                            sh 'terraform init'
                             sh "terraform apply -auto-approve -var='container_image_tag=${rollbackTag}'"
                         }
                     }
