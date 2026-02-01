@@ -49,12 +49,16 @@ pipeline {
 
         stage('Provision Infrastructure') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', 
+                                                  passwordVariable: 'AWS_SECRET_ACCESS_KEY', 
+                                                  usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     dir('terraform/environment/dev') {
                         sh 'terraform init'
                         sh 'terraform apply -auto-approve'
                         script {
-                            env.ALB_URL = sh(script: 'terraform output -raw alb_dns_name', returnStdout: true).trim()
+                            def rawUrl = sh(script: 'terraform output -raw alb_dns_name', returnStdout: true).trim()
+                            
+                            env.ALB_URL = rawUrl.replaceAll(/[╷"<>]/, "") 
                         }
                     }
                 }
