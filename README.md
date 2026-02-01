@@ -1,9 +1,6 @@
-# gcc-cloud-assignment
-GCC Cloud Assignment Repo
+# GCC Gov-Cloud Deployment Assignment Pipeline
 
-# GCC Gov-Cloud Deployment Pipeline
-
-This project is my submission for Assignments 1, 2, and 3. It shows a fully automated, secure AWS environment managed by Terraform and Jenkins, with built-in "Self-Healing" and Jira governance.
+This project is my submission for Assignments 1, 2, and 3. It shows a fully automated, secure AWS environment managed by Terraform,Jenkins, Docker containerization, with built-in "Self-Healing" and Jira governance adhering to GCC/GCC+, SHIP-HAT compliance frameworks.
 
 ## What this project does
 1.  **Sets up AWS:** Creates a secure VPC, private subnets, and IAM roles using Terraform.
@@ -76,3 +73,8 @@ This confirms that all resources (VPC, IAM, KMS, ALB) are successfully tracked i
 2. Ensure your commit message starts with `GCC-XXX:`.
 3. Jenkins will automatically trigger the build.
 4. Check the ALB URL output at the end to see the live app.
+
+---
+**Author:** Kavinesh Manimaran    
+**Project:** AWS@Terraform - GCC/SHIP-HAT Compliance Assignment
+© 2026 All Rights Reserved.
