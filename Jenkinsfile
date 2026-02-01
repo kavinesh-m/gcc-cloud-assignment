@@ -64,8 +64,11 @@ pipeline {
     post {
         failure {
             script {
+                sh "ls -la" 
+                
                 echo "Verification Failed! Triggering Self-Healing Rollback..."
                 def prevBuild = (env.BUILD_NUMBER.toInteger() - 1)
+                
                 if (prevBuild > 0) {
                     def rollbackTag = "v${prevBuild}"
                     def tfPath = "terraform/environment/dev"
@@ -74,16 +77,18 @@ pipeline {
                                     passwordVariable: 'AWS_SECRET_ACCESS_KEY', 
                                     usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                         
-                        echo "Executing Rollback from directory: ${tfPath}"
-                        
-                        sh "terraform -chdir=${tfPath} init"
-                        sh "terraform -chdir=${tfPath} apply -auto-approve -var='container_image_tag=${rollbackTag}'"
+                        if (fileExists(tfPath)) {
+                            sh "terraform -chdir=${tfPath} init"
+                            sh "terraform -chdir=${tfPath} apply -auto-approve -var='container_image_tag=${rollbackTag}'"
+                            echo "SUCCESS: Rollback to ${rollbackTag} complete."
+                        } else {
+                            error "CRITICAL: Terraform directory not found at ${tfPath}. Workspace may have been cleaned."
+                        }
                     }
-                    echo "SUCCESS: Rollback to ${rollbackTag} complete."
                 }
             }
         }
-        always {
+        success {
             cleanWs()
         }
     }
