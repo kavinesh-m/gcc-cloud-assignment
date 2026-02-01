@@ -1,26 +1,34 @@
 #!/bin/bash
 ALB_URL=$1
+EXPECTED_TEXT="Fail-Rollback-Test-String" 
 
 if [ -z "$ALB_URL" ]; then
-    echo "ERROR: No ALB URL provided. Orchestration failed."
+    echo "ERROR: No ALB URL provided."
     exit 1
 fi
 
 echo "Starting Post-deployment Verification for: $ALB_URL"
 
-# Logic Breakdown:
-# -L: Follow the HTTP (80) -> HTTPS (443) redirect
-# -k: Ignore the "Insecure" SSL certificate warning 
-# --retry 6: Give ECS Fargate ~3 minutes to stabilize
-# --retry-delay 30: Wait 30 seconds between pings
+MAX_RETRIES=6
+COUNT=0
 
-if curl -s -L -k -f --retry 6 --retry-delay 30 "$ALB_URL" > /dev/null; then
-    echo "----------------------------------------------------"
-    echo "SUCCESS: Application is live and accessible!"
-    echo "URL: $ALB_URL"
-    echo "----------------------------------------------------"
-    exit 0
-else
-    echo "ERROR: Application health check failed after multiple attempts."
-    exit 1
-fi
+while [ $COUNT -lt $MAX_RETRIES ]; do
+    echo "Attempting to verify content (Attempt $((COUNT+1))/$MAX_RETRIES)..."
+    
+    RESPONSE=$(curl -s -L -k "$ALB_URL")
+    
+    if echo "$RESPONSE" | grep -q "$EXPECTED_TEXT"; then
+        echo "----------------------------------------------------"
+        echo "SUCCESS: Found expected text '$EXPECTED_TEXT'!"
+        echo "URL: $ALB_URL"
+        echo "----------------------------------------------------"
+        exit 0
+    fi
+    
+    echo "Expected text not found yet. Waiting 30 seconds..."
+    sleep 30
+    COUNT=$((COUNT+1))
+done
+
+echo "ERROR: Content verification failed after $MAX_RETRIES attempts."
+exit 1
