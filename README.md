@@ -1,6 +1,6 @@
 # GCC Gov-Cloud Deployment Assignment Pipeline
 
-This project is my submission for Assignments 1, 2, and 3. It shows a fully automated, secure AWS environment managed by Terraform,Jenkins, Docker containerization, with built-in "Self-Healing" and Jira governance adhering to GCC/GCC+, SHIP-HAT compliance frameworks.
+This project is my submission of technical assignment for Cloud Devops Engineer role and it comprise of Assignments 1, 2, and 3. It shows a fully automated, secure AWS environment managed by Terraform,Jenkins, Docker containerization, with built-in "Self-Healing" and Jira governance adhering to GCC/GCC+, SHIP-HAT compliance frameworks.
 
 ## What this project does
 1.  **Sets up AWS:** Creates a secure VPC, private subnets, and IAM roles using Terraform.
