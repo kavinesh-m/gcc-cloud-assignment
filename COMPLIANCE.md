@@ -34,7 +34,5 @@ d) Python
 e) Docker
 f) AWS free-tier subscription
 g) Github
-h) Powershell
-i) Visual Studio code
-j) AWS CLI
-k) Git bash
+h) AWS CLI
+i) Git bash

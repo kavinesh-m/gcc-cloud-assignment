@@ -44,12 +44,14 @@ This project follows the **SHIP-HAT** standards:
 
 <details> <summary><b>Click to view: Live Endpoint Proof</b></summary>
 
-This is the verification that the application is live and accessible via the ALB.
+Verification that the application is live and accessible via the ALB.
 
 ## Live Endpoint
 **URL:** [https://dev-alb-1945154568.ap-southeast-1.elb.amazonaws.com/]
+
 ![Application Screenshot](assets/web-app.png)
-(Full endpoint proof available in /artefacts/live_endpoint_proof.txt)
+
+Full endpoint proof available in ![Endpoint proof](artefacts/live_endpoint_proof.txt)
 
 </details>
 
