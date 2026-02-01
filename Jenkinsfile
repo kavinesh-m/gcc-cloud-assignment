@@ -16,7 +16,7 @@ pipeline {
                     if (commitMsg =~ /GCC-[0-9]+/) {
                         echo "Compliance Verified: Jira Ticket found."
                     } else {
-                        error "COMPLIANCE FAILURE: Commit message must contain a Jira ticket (e.g., 'GCC-123: Test Compliance')."
+                        error "COMPLIANCE FAILURE: Commit message must contain a Jira ticket (e.g., 'GCC-123: Test Compliance')"
                     }
                 }
             }
