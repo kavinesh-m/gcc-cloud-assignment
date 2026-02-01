@@ -66,19 +66,24 @@ pipeline {
             script {
                 echo "Verification Failed! Triggering Self-Healing Rollback..."
                 def prevBuild = (env.BUILD_NUMBER.toInteger() - 1)
+                
                 if (prevBuild > 0) {
                     def rollbackTag = "v${prevBuild}"
                     withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', 
                                     passwordVariable: 'AWS_SECRET_ACCESS_KEY', 
                                     usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                        
                         dir('terraform/environment/dev') {
+                            echo "Rolling back ECS to image tag: ${rollbackTag}"
                             sh "terraform apply -auto-approve -var='container_image_tag=${rollbackTag}'"
                         }
                     }
-                    echo "Rollback to ${rollbackTag} complete."
+                    echo "SUCCESS: Rollback to ${rollbackTag} completed."
                 }
             }
         }
-        always { cleanWs() }
+        always {
+            cleanWs()
+        }
     }
 }
