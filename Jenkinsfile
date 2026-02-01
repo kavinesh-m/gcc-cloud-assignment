@@ -6,6 +6,20 @@ pipeline {
         IMAGE_TAG = "v${env.BUILD_NUMBER}"
     }
     stages {
+        stage('Jira Governance Check') {
+            steps {
+                script {
+                    def commitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+                    echo "Checking Commit Message: ${commitMsg}"
+                    
+                    if (commitMsg =~ /GCC-[0-9]+/) {
+                        echo "Compliance Verified: Jira Ticket found."
+                    } else {
+                        error "COMPLIANCE FAILURE: Commit message must contain a Jira ticket (e.g., 'GCC-123: Update app')."
+                    }
+                }
+            }
+        }
         stage('Pre-flight Validation') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'aws-gcc-keys', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {

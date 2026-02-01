@@ -1,6 +1,6 @@
 #!/bin/bash
 ALB_URL=$1
-EXPECTED_TEXT="Fail-Rollback-Test-String" 
+EXPECTED_TEXT="Hello GCC!" 
 
 if [ -z "$ALB_URL" ]; then
     echo "ERROR: No ALB URL provided."
